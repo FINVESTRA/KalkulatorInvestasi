@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kalkulator Dividen dengan Reinvestasi</title>
+  <style>
+    :root {
+      --primary: #4e73df;
+      --bg: linear-gradient(135deg, #a8edea, #fed6e3);
+      --text: #343a40;
+      --card: #ffffffcc;
+      --border: #dee2e6;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      min-height: 100vh;
+      background-attachment: fixed;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 2px #fff;
+    }
+
+    p.description {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+    }
+
+    label {
+      margin-top: 10px;
+      display: block;
+      font-weight: bold;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .hasil {
+      background: var(--card);
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-25deg);
+      font-size: 60px;
+      font-weight: bold;
+      color: rgba(255, 255, 255, 0.25);
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+      -webkit-text-stroke: 0.8px rgba(0, 0, 0, 0.2);
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+      white-space: nowrap;
+    }
+
+    @media screen and (max-width: 480px) {
+      .container {
+        padding: 10px;
+      }
+
+      input, select, button {
+        font-size: 14px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Kalkulator Dividen dengan Reinvestasi</h2>
+    <p class="description">Simulasi keuntungan jika dividen diinvestasikan ulang setiap tahun.</p>
+
+    <div class="card">
+      <label>Investasi per Bulan (Rp)</label>
+      <input type="number" id="perBulan" placeholder="Contoh: 500000">
+
+      <label>Lama Investasi (Tahun)</label>
+      <input type="number" id="tahun" placeholder="Contoh: 20">
+
+      <label>Dividend Yield (% per Tahun)</label>
+      <input type="number" id="yield" placeholder="Contoh: 5">
+
+      <button onclick="hitungDividenReinvest()">Hitung</button>
+    </div>
+
+    <div class="card hasil" id="hasil"></div>
+  </div>
+
+  <div class="watermark">Finvestra</div>
+
+  <script>
+    function hitungDividenReinvest() {
+      const perBulan = parseFloat(document.getElementById('perBulan').value);
+      const tahun = parseFloat(document.getElementById('tahun').value);
+      const yieldPercent = parseFloat(document.getElementById('yield').value);
+
+      if (isNaN(perBulan) || isNaN(tahun) || isNaN(yieldPercent)) {
+        alert("Harap isi semua kolom dengan benar.");
+        return;
+      }
+
+      const investasiTahunan = perBulan * 12;
+      let totalAset = 0;
+      let totalDividen = 0;
+
+      for (let i = 1; i <= tahun; i++) {
+        totalAset += investasiTahunan;
+        const dividen = totalAset * (yieldPercent / 100);
+        totalDividen += dividen;
+        totalAset += dividen;
+      }
+
+      const totalInvestasi = investasiTahunan * tahun;
+      const dividenTahunanAkhir = totalAset * (yieldPercent / 100);
+      const dividenBulananAkhir = dividenTahunanAkhir / 12;
+
+      const hasilBox = document.getElementById('hasil');
+      hasilBox.style.display = 'block';
+      hasilBox.innerHTML = `
+        <p><strong>Total uang yang kamu setorkan:</strong> Rp ${totalInvestasi.toLocaleString()}</p>
+        <p><strong>Total aset setelah ${tahun} tahun (termasuk reinvestasi dividen):</strong> Rp ${Math.round(totalAset).toLocaleString()}</p>
+        <p><strong>Total dividen yang kamu terima selama ${tahun} tahun:</strong> Rp ${Math.round(totalDividen).toLocaleString()}</p>
+
+        <hr>
+        <p style="font-weight: bold;">Kesimpulan:</p>
+        <p>Jika kamu berhenti investasi setelah ${tahun} tahun, dan hanya hidup dari dividen tanpa reinvestasi lagi:</p>
+        <p>✅ Kamu akan menerima dividen sekitar <strong>Rp ${Math.round(dividenTahunanAkhir).toLocaleString()} per tahun</strong></p>
+        <p>✅ Atau setara dengan <strong>Rp ${Math.round(dividenBulananAkhir).toLocaleString()} per bulan</strong></p>
+        <p style="margin-top: 10px;"><strong>Artinya:</strong> kamu bisa menganggap dividen ini seperti <strong>“gaji pasif bulanan”</strong> setelah pensiun investasi.</p>
+
+        <p style="font-size: 0.9em; color: gray;">* Simulasi ini tidak memperhitungkan pajak, biaya transaksi, atau perubahan harga saham.</p>
+      `;
+    }
+  </script>
+</body>
+</html>
