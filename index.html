@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Kalkulator Dividen dengan Reinvestasi</title>
   <style>
     :root {
@@ -55,23 +56,28 @@
       font-weight: bold;
     }
 
-    input, select, button {
+    input, select {
       width: 100%;
-      padding: 10px;
+      padding: 14px;
       margin-top: 5px;
       margin-bottom: 10px;
       border: 1px solid var(--border);
       border-radius: 6px;
-      font-size: 16px;
+      font-size: 18px;
       box-sizing: border-box;
     }
 
     button {
+      width: 100%;
+      padding: 14px;
       background-color: var(--primary);
       color: white;
       border: none;
       cursor: pointer;
       font-weight: bold;
+      border-radius: 6px;
+      font-size: 18px;
+      box-sizing: border-box;
     }
 
     .hasil {
@@ -82,6 +88,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       backdrop-filter: blur(8px);
       display: none;
+      margin-top: 20px;
     }
 
     .watermark {
@@ -106,7 +113,7 @@
       }
 
       input, select, button {
-        font-size: 14px;
+        font-size: 16px;
       }
 
       h2 {
@@ -133,7 +140,7 @@
       <button onclick="hitungDividenReinvest()">Hitung</button>
     </div>
 
-    <div class="card hasil" id="hasil"></div>
+    <div class="hasil" id="hasil"></div>
   </div>
 
   <div class="watermark">Finvestra</div>
