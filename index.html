@@ -80,6 +80,10 @@
       box-sizing: border-box;
     }
 
+    .hasil, #chartDividen, #tabelRincian {
+      display: none;
+    }
+
     .hasil {
       background: var(--card);
       padding: 15px;
@@ -87,7 +91,6 @@
       border: 1px solid var(--border);
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       backdrop-filter: blur(8px);
-      display: none;
       margin-top: 20px;
     }
 
@@ -107,6 +110,20 @@
       white-space: nowrap;
     }
 
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      min-width: 600px;
+    }
+
+    table th, table td {
+      border: 1px solid var(--border);
+      padding: 8px;
+      text-align: center;
+      background-color: white;
+    }
+
     @media screen and (max-width: 480px) {
       .container {
         padding: 10px;
@@ -121,6 +138,7 @@
       }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
@@ -141,6 +159,10 @@
     </div>
 
     <div class="hasil" id="hasil"></div>
+    <canvas id="chartDividen" style="max-height: 300px;"></canvas>
+    <div class="card" style="overflow-x: auto;">
+      <div id="tabelRincian" style="min-width: 600px;"></div>
+    </div>
   </div>
 
   <div class="watermark">Finvestra</div>
@@ -159,13 +181,34 @@
       const investasiTahunan = perBulan * 12;
       let totalAset = 0;
       let totalDividen = 0;
+      let tahunLabels = [];
+      let asetData = [];
+      let dividenData = [];
+      let tabelHTML = `<h3>Rincian Tahunan</h3>
+      <table>
+        <tr><th>Tahun</th><th>Total Investasi</th><th>Total Aset</th><th>Total Dividen</th></tr>`;
 
       for (let i = 1; i <= tahun; i++) {
         totalAset += investasiTahunan;
-        const dividen = totalAset * (yieldPercent / 100);
+        let dividen = totalAset * (yieldPercent / 100);
         totalDividen += dividen;
         totalAset += dividen;
+
+        tahunLabels.push(`Tahun ${i}`);
+        asetData.push(Math.round(totalAset));
+        dividenData.push(Math.round(totalDividen));
+
+        tabelHTML += `<tr>
+          <td>${i}</td>
+          <td>Rp ${Math.round(investasiTahunan * i).toLocaleString()}</td>
+          <td>Rp ${Math.round(totalAset).toLocaleString()}</td>
+          <td>Rp ${Math.round(totalDividen).toLocaleString()}</td>
+        </tr>`;
       }
+
+      tabelHTML += '</table>';
+      document.getElementById("tabelRincian").innerHTML = tabelHTML;
+      document.getElementById("tabelRincian").style.display = 'block';
 
       const totalInvestasi = investasiTahunan * tahun;
       const dividenTahunanAkhir = totalAset * (yieldPercent / 100);
@@ -187,6 +230,41 @@
 
         <p style="font-size: 0.9em; color: gray;">* Simulasi ini tidak memperhitungkan pajak, biaya transaksi, atau perubahan harga saham.</p>
       `;
+
+      const chart = document.getElementById('chartDividen');
+      chart.style.display = 'block';
+      const ctx = chart.getContext('2d');
+      if (window.myChart) window.myChart.destroy();
+      window.myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: tahunLabels,
+          datasets: [
+            {
+              label: 'Total Aset',
+              data: asetData,
+              borderColor: '#4e73df',
+              fill: false,
+              tension: 0.1
+            },
+            {
+              label: 'Akumulasi Dividen',
+              data: dividenData,
+              borderColor: '#f97316',
+              fill: false,
+              tension: 0.1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top'
+            }
+          }
+        }
+      });
     }
   </script>
 </body>
